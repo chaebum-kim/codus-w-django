@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+{% load bootstrap4 %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 offset-sm-11">
+                <div class="card">
+                    <div class="card-header">
+                        Sign up
+                    </div>
+                    <div class="card-body">
+                        <form action="" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% bootstrap_form form %}
+                            {% buttons %}
+                                <button type="submit" class="btn btn-dark btn-block">Sign up</button>
+                            {% endbuttons %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
