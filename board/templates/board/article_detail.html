@@ -1,0 +1,36 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <ul>
+            <li>{{ article.title }}</li>
+            <li>{{ article.created_at }}</li>
+            <li>{{ article.updated_at }}</li>
+            <li>{{ article.content }}</li>
+            <li>
+                {% for tag in article.tag_set.all %}
+                    #{{ tag }}
+                {% endfor %}
+            </li>
+        </ul>
+        
+        {% if user.is_authenticated and article.author == request.user %}
+            <div class="row">
+                <div class="col-sm-3">
+                    <a href="{% url 'board:article_edit' article.pk %}">
+                        <button class="btn btn-dark btn-block">Edit</button>
+                    </a>
+                </div>
+                <div class="col-sm-3">
+                    <a href="{% url 'board:article_delete' article.pk %}">
+                        <button class="btn btn-danger btn-block">Delete</button>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        
+    </div>
+
+{% endblock %}

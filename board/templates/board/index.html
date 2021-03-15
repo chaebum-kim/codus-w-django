@@ -1,7 +1,15 @@
 {% extends 'layout.html' %}
 
 {% block content %}
+
     <div class="container">
-        HELLO
+        {% for article in article_list %}
+            <div>
+                <a href="{% url 'board:article_detail' article.pk %}">
+                    {{ article }}
+                </a>
+            </div>
+        {% endfor %}
     </div>
+    
 {% endblock %}
