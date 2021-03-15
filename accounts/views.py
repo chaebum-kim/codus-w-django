@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from .forms import SignupForm
 
 
@@ -17,3 +19,12 @@ def signup(request):
     return render(request, 'accounts/signup_form.html', {
         'form': form
     })
+
+
+login_view = LoginView.as_view(template_name='accounts/login_form.html')
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('board:index')
