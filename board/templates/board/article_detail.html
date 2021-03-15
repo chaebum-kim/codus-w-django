@@ -16,7 +16,7 @@
             </li>
         </ul>
         
-        {% if user.is_authenticated and article.author == request.user %}
+        {% if user.is_authenticated and article.author == user %}
             <div class="row">
                 <div class="col-sm-3">
                     <a href="{% url 'board:article_edit' article.pk %}">

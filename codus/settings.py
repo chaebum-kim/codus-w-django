@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'bootstrap4',
+    'imagekit',
     # Local apps
     'codus',
     'accounts',

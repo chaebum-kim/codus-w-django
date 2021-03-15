@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User, Profile
 
 
 class SignupForm(UserCreationForm):
@@ -20,3 +20,13 @@ class SignupForm(UserCreationForm):
             if q.exists():
                 raise forms.ValidationError('이미 등록된 이메일 주소입니다.')
         return email
+
+
+class ProfileForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ['avatar']
+        labels = {
+            'avatar': 'Profile Image',
+        }
