@@ -60,7 +60,9 @@ function deleteComment(target) {
     const commentBox = target.parentElement;
     if (confirm('Are you sure you want to delete this comment?')) {
         const pk = commentBox.dataset.commentPk;
-        fetch(`http://127.0.0.1:8000/board/comment/${pk}/delete/`)
+        fetch(`http://127.0.0.1:8000/board/comment/${pk}/delete/`, {
+            method: 'put',
+        })
         .then(response => response.json())
         .then(data => {
             if (data['status'] === true) {

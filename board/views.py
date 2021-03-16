@@ -136,9 +136,14 @@ def comment_edit(request, pk):
     return redirect(comment.article)
 
 
+@csrf_exempt
 @login_required
 def comment_delete(request, pk):
 
     comment = get_object_or_404(Comment, pk=pk)
-    comment.delete()
-    return JsonResponse({'status': True})
+
+    if request.method == 'PUT':
+        comment.delete()
+        return JsonResponse({'status': True})
+
+    return redirect(comment.article)
