@@ -39,9 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     # Third-party apps
     'bootstrap4',
     'imagekit',
+    'debug_toolbar',
     # Local apps
     'codus',
     'accounts',
@@ -56,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'codus.urls'
@@ -133,6 +136,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILE_DIRS = [
     os.path.join(BASE_DIR, 'codus', 'static'),
+    os.path.join(BASE_DIR, 'static'),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 

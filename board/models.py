@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from django.contrib.humanize.templatetags.humanize import naturaltime
 
 
 class BaseModel(models.Model):
@@ -39,3 +40,24 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Comment(BaseModel):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.CharField(max_length=300)
+
+    def serialize(self):
+        return {
+            'author': self.author.username,
+            'content': self.content,
+            'created_at': naturaltime(self.created_at),
+            'updated_at': naturaltime(self.updated_at),
+        }
+
+    def __str__(self):
+        return f'Comment #{self.id}'
+
+    class Meta:
+        ordering = ['id']

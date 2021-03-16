@@ -1,9 +1,9 @@
 {% extends 'layout.html' %}
+{% load static humanize %}
 
 {% block content %}
 
     <div class="container">
-
         <ul>
             <li>{{ article.title }}</li>
             <li>{{ article.created_at }}</li>
@@ -30,7 +30,38 @@
                 </div>
             </div>
         {% endif %}
-        
     </div>
 
+    <div class="container">
+        <form action="{% url 'board:comment_new' article.pk %}" method="post">
+            <div class="row">
+                {% csrf_token %}
+                <div class="col-sm-9">
+                    {{ comment_form.content }}
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-dark">Add comment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="comment-set" class="container mt-3">
+        {% for comment in comment_list %}
+            <div data-comment-pk="{{ comment.pk }}"">
+                {{ comment.author.username }}
+                <span>{{ comment.content }}</span>
+                {{ comment.created_at|naturaltime }}
+                {% if comment.author == request.user %}
+                    <a href="#">Edit</a>
+                    <a href="#">Delete</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'board/comment.js' %}"></script>
 {% endblock %}

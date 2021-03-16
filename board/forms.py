@@ -1,6 +1,6 @@
 from django import forms
 from django.core.validators import MaxLengthValidator
-from .models import Article
+from .models import Article, Comment
 import re
 
 
@@ -17,3 +17,16 @@ class ArticleForm(forms.Form):
         if data:
             data = data.lower()
         return data
+
+
+class CommentForm(forms.ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ['content']
+        labels = {
+            'content': 'Comment',
+        }
+        widgets = {
+            'content': forms.TextInput(attrs={'placeholder': 'Comment', 'class': 'form-control'})
+        }

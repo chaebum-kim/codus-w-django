@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .forms import ArticleForm
-from .models import Article, Tag
+from django.views.decorators.csrf import csrf_exempt
+import json
 import re
+from .forms import ArticleForm, CommentForm
+from .models import Article, Tag, Comment
 
 
 def index(request):
@@ -41,8 +44,12 @@ def article_new(request):
 
 def article_detail(request, pk):
     article = get_object_or_404(Article, pk=pk)
+    comment_list = article.comment_set.all()
+    comment_form = CommentForm()
     return render(request, 'board/article_detail.html', {
         'article': article,
+        'comment_list': comment_list,
+        'comment_form': comment_form,
     })
 
 
@@ -95,3 +102,43 @@ def article_delete(request, pk):
 
     article.delete()
     return redirect('board:index')
+
+
+@login_required
+def comment_new(request, article_pk):
+
+    article = get_object_or_404(Article, pk=article_pk)
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.article = article
+            comment.author = request.user
+            comment.save()
+
+    return redirect(article)
+
+
+@csrf_exempt
+@login_required
+def comment_edit(request, pk):
+
+    comment = get_object_or_404(Comment, pk=pk)
+
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        form = CommentForm(data, instance=comment)
+        if form.is_valid():
+            comment = form.save()
+            return JsonResponse(comment.serialize())
+
+    return redirect(comment.article)
+
+
+@login_required
+def comment_delete(request, pk):
+
+    comment = get_object_or_404(Comment, pk=pk)
+    comment.delete()
+    return JsonResponse({'status': True})
