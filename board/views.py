@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator
 import json
 import re
 from .forms import ArticleForm, CommentForm
@@ -9,9 +10,28 @@ from .models import Article, Tag, Comment
 
 
 def index(request):
+
     article_list = Article.objects.all()
+    paginator = Paginator(article_list, 10)
+
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+
+    page_number = page_obj.number
+    if page_number % 5 == 1:
+        start_page = page_number
+    else:
+        start_page = page_number // 5 + 1
+
+    end_page = start_page + 4
+    if end_page > paginator.num_pages:
+        end_page = paginator.num_pages
+
+    page_range = [x for x in range(start_page, end_page+1)]
+
     return render(request, 'board/index.html', {
-        'article_list': article_list,
+        'page_obj': page_obj,
+        'page_range': page_range,
     })
 
 
