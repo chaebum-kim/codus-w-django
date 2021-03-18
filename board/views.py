@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponse
+from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -56,9 +57,11 @@ def article_new(request):
             return redirect(article)
     else:
         form = ArticleForm()
+        redirect_url = request.META.get('HTTP_REFERER', '/')
 
     return render(request, 'board/article_form.html', {
         'form': form,
+        'redirect_url': redirect_url,
     })
 
 
@@ -107,9 +110,11 @@ def article_edit(request, pk):
             'tag_set': article.tag_set_as_string(),
         }
         form = ArticleForm(data)
+        redirect_url = article.get_absolute_url()
 
     return render(request, 'board/article_form.html', {
         'form': form,
+        'redirect_url': redirect_url,
     })
 
 
@@ -145,13 +150,15 @@ def comment_new(request, article_pk):
 def comment_edit(request, pk):
 
     comment = get_object_or_404(Comment, pk=pk)
+    if comment.author != request.user:
+        return JsonResponse({'status': False}, status=401)
 
     if request.method == 'POST':
         data = json.loads(request.body)
         form = CommentForm(data, instance=comment)
         if form.is_valid():
             comment = form.save()
-            return JsonResponse(comment.serialize())
+            return JsonResponse({'status': True, 'comment': comment.serialize()}, safe=False)
 
     return redirect(comment.article)
 
@@ -161,6 +168,8 @@ def comment_edit(request, pk):
 def comment_delete(request, pk):
 
     comment = get_object_or_404(Comment, pk=pk)
+    if comment.author != request.user:
+        return JsonResponse({'status': False}, status=401)
 
     if request.method == 'PUT':
         comment.delete()

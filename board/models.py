@@ -52,7 +52,7 @@ class Comment(BaseModel):
         return {
             'author': self.author.username,
             'content': self.content,
-            'created_at': naturaltime(self.created_at),
+            'created_at': self.created_at,
             'updated_at': naturaltime(self.updated_at),
         }
 

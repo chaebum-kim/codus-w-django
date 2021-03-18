@@ -1,67 +1,97 @@
 {% extends 'layout.html' %}
-{% load static humanize %}
+{% load static humanize markdown_tags %}
 
 {% block content %}
 
     <div class="container">
-        <ul>
-            <li>{{ article.title }}</li>
-            <li>{{ article.created_at }}</li>
-            <li>{{ article.updated_at }}</li>
-            <li>{{ article.content }}</li>
-            <li>
-                {% for tag in article.tag_set.all %}
-                    #{{ tag }}
-                {% endfor %}
-            </li>
-        </ul>
-        
-        {% if user.is_authenticated and article.author == user %}
-            <div class="row">
-                <div class="col-sm-3">
-                    <a href="{% url 'board:article_edit' article.pk %}">
-                        <button class="btn btn-dark btn-block">Edit</button>
-                    </a>
-                </div>
-                <div class="col-sm-3">
-                    <a href="{% url 'board:article_delete' article.pk %}">
-                        <button class="btn btn-danger btn-block">Delete</button>
-                    </a>
+        <div class="border-bottom p-2">
+            <span class="large-font bold-font">{{ article.title }}</span>
+            <div>
+                <span><img src="{{article.author.profile.avatar_url }}" class="rounded-circle mr-1" style="width: 30px;"></span>
+                <span class="mr-1">{{ article.author.username }}</span>
+                <span class="text-muted small-font mr-1">{{ article.created_at|naturaltime }}</span>
+                <span>
+                    {% if user.is_authenticated and article.author == user %}
+                        <a class="small-font" href="{% url 'board:article_edit' article.pk %}">
+                            Edit
+                        </a>
+                        <a class="small-font" href="{% url 'board:article_delete' article.pk %}">
+                            Delete
+                        </a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+       
+        <div class="markdown">
+                {% autoescape off %}
+                {{ article.content|convert_markdown }}
+                {% endautoescape %}
+        </div>
+
+        {% if article.tag_set.all %}
+            <div class="tag-set">
+                <div style="color: blue;">Tags: </div>
+                    <div>
+                        {% for tag in article.tag_set.all %}
+                            #{{ tag }}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         {% endif %}
     </div>
 
     <div class="container">
-        <form action="{% url 'board:comment_new' article.pk %}" method="post">
-            <div class="row">
-                {% csrf_token %}
-                <div class="col-sm-9">
-                    {{ comment_form.content }}
-                </div>
-                <div class="col-sm-3">
-                    <button type="submit" class="btn btn-dark">Add comment</button>
-                </div>
-            </div>
-        </form>
-    </div>
+        <div class="border-bottom p-2">
+            <span class="middle-font">Comment</span>
+        </div>
 
-    <div id="comment-set" class="container mt-3">
-        {% for comment in comment_list %}
-            <div data-comment-pk="{{ comment.pk }}"">
-                {{ comment.author.username }}
-                <span>{{ comment.content }}</span>
-                {{ comment.created_at|naturaltime }}
-                {% if comment.author == request.user %}
-                    <a href="#">Edit</a>
-                    <a href="#">Delete</a>
-                {% endif %}
-            </div>
-        {% endfor %}
+        <div class="mt-3 p-2">
+            <form action="{% url 'board:comment_new' article.pk %}" method="post">
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-sm-9">
+                        {{ comment_form.content }}
+                    </div>
+                    <div class="col-sm-3">
+                        <button type="submit" class="btn btn-dark">Add comment</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="comment-set" class="mt-3 mb-3 p-2">
+            {% for comment in comment_list %}
+                <div data-comment-pk="{{ comment.pk }}" class="border-bottom p-2">
+                    <div class="mb-1">
+                        <span><img src="{{ comment.author.profile.avatar_url }}" class="rounded-circle mr-1" style="width: 30px;"></span>
+                        <span class="bold-font mr-1">{{ comment.author.username }}</span>
+                        <span class="text-muted small-font">{{ comment.created_at|date:'y/m/d f a T'}} | </span>
+                        <span class="text-muted small-font mr-1">edited {{ comment.updated_at|naturaltime }}</span>
+                        <span>
+                            {% if comment.author == request.user %}
+                                <a href="#" class="small-font" data-comment-pk="{{ comment.pk }}">Edit</a>
+                                <a href="#" class="small-font" data-comment-pk="{{ comment.pk }}">Delete</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        {{ comment.content }}
+                    </div>
+                    
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
 {% endblock %}
 
 {% block script %}
     <script src="{% static 'board/comment.js' %}"></script>
+{% endblock %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{% static 'board/github.css' %}">
+    <link rel="stylesheet" href="{% static 'board/style.css' %}">
 {% endblock %}

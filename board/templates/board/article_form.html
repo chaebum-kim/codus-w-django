@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% load bootstrap4 %}
+{% load static bootstrap4 %}
 
 {% block content %}
 
@@ -11,8 +11,8 @@
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% buttons %}
-                    <a href>
-                        <button class="btn btn-secondary">Cancle</button>
+                    <a href="{% if redirect_url %}{{ redirect_url }}{% endif %}" class="btn btn-secondary">
+                        Cancle
                     </a>
                     <button type="submit" class="btn btn-dark">Save</button>
                 {% endbuttons %}
