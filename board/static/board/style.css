@@ -34,3 +34,9 @@
   padding-left: 30px;
   padding-right: 30px;
 }
+
+.btn-scrap {
+  background-color: #ffc107;
+  border: 1px solid transparent;
+  border-radius: 0.5em;
+}

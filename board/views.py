@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 import json
 import re
 from .forms import ArticleForm, CommentForm
-from .models import Article, Tag, Comment
+from .models import Article, Tag, Comment, Scrap
 
 
 def index(request):
@@ -66,13 +66,23 @@ def article_new(request):
 
 
 def article_detail(request, pk):
+
+    user = request.user
     article = get_object_or_404(Article, pk=pk)
     comment_list = article.comment_set.all()
     comment_form = CommentForm()
+
+    if user.is_authenticated:
+        user_scrap = user.scrap_set.first()
+        is_scrapped = user_scrap.article_set.filter(id=article.pk).exists()
+    else:
+        is_scrapped = None
+
     return render(request, 'board/article_detail.html', {
         'article': article,
         'comment_list': comment_list,
         'comment_form': comment_form,
+        'is_scrapped': is_scrapped,
     })
 
 
@@ -127,6 +137,39 @@ def article_delete(request, pk):
 
     article.delete()
     return redirect('board:index')
+
+
+@csrf_exempt
+@login_required
+def article_scrap(request, pk):
+
+    article = get_object_or_404(Article, pk=pk)
+    user = request.user
+
+    if request.method == 'POST':
+
+        scrap, created = Scrap.objects.get_or_create(user=user)
+        scrap.article_set.add(article)
+
+        return JsonResponse({'status': True})
+
+    return redirect(article)
+
+
+@csrf_exempt
+@login_required
+def article_unscrap(request, pk):
+
+    article = get_object_or_404(Article, pk=pk)
+    user = request.user
+
+    if request.method == 'PUT':
+
+        user_scrap = user.scrap_set.first()
+        user_scrap.article_set.remove(article)
+        return JsonResponse({'status': True})
+
+    return redirect(article)
 
 
 @login_required

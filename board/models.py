@@ -61,3 +61,12 @@ class Comment(BaseModel):
 
     class Meta:
         ordering = ['id']
+
+
+class Scrap(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    article_set = models.ManyToManyField(Article, blank=True)
+
+    def __str__(self):
+        return self.user.username

@@ -15,7 +15,7 @@
                 {% for article in page_obj %}
                     <tr>
                         <td class="pl-5"><a href="{% url 'board:article_detail' article.pk %}">{{ article.title }}</a></td>
-                        <td>{{ article.author.username }}</td>
+                        <td>{{ article.author }}</td>
                     </tr>
                 {% endfor %}
             </tbody>

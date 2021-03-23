@@ -49,13 +49,12 @@ function editComment(target) {
     editLink.style.pointerEvents = 'auto';
 
     fetch(`http://127.0.0.1:8000/board/comment/${pk}/edit/`, {
-        method: 'post',
+        method: 'POST',
         body: JSON.stringify({
             'content': content,
         })
     })
-    .then(response => response.json()
-    )
+    .then(response => response.json())
     .then(data => {
         if (data['status'] === true) {
             const comment = data['comment'];
@@ -71,7 +70,7 @@ function deleteComment(target) {
     const commentBox = document.querySelector(`div[data-comment-pk='${pk}']`);
     if (confirm('Are you sure you want to delete this comment?')) {
         fetch(`http://127.0.0.1:8000/board/comment/${pk}/delete/`, {
-            method: 'put',
+            method: 'PUT',
         })
         .then(response => response.json())
         .then(data => {
