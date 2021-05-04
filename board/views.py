@@ -73,7 +73,7 @@ def article_detail(request, pk):
     comment_form = CommentForm()
 
     if user.is_authenticated:
-        user_scrap = user.scrap_set.first()
+        user_scrap = user.scrap
         is_scrapped = user_scrap.article_set.filter(id=article.pk).exists()
     else:
         is_scrapped = None
@@ -153,7 +153,7 @@ def article_scrap(request, pk):
 
         return JsonResponse({'status': True})
 
-    return redirect(article)
+    return JsonResponse({'status': False})
 
 
 @csrf_exempt
@@ -165,11 +165,11 @@ def article_unscrap(request, pk):
 
     if request.method == 'PUT':
 
-        user_scrap = user.scrap_set.first()
+        user_scrap = user.scrap
         user_scrap.article_set.remove(article)
         return JsonResponse({'status': True})
 
-    return redirect(article)
+    return JsonResponse({'status': False})
 
 
 @login_required
@@ -188,34 +188,28 @@ def comment_new(request, article_pk):
     return redirect(article)
 
 
-@csrf_exempt
 @login_required
 def comment_edit(request, pk):
 
     comment = get_object_or_404(Comment, pk=pk)
     if comment.author != request.user:
-        return JsonResponse({'status': False}, status=401)
+        return HttpResponse(status=401)
 
     if request.method == 'POST':
-        data = json.loads(request.body)
-        form = CommentForm(data, instance=comment)
+        form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
             comment = form.save()
-            return JsonResponse({'status': True, 'comment': comment.serialize()}, safe=False)
+            return redirect(comment.article)
 
     return redirect(comment.article)
 
 
-@csrf_exempt
 @login_required
 def comment_delete(request, pk):
 
     comment = get_object_or_404(Comment, pk=pk)
     if comment.author != request.user:
-        return JsonResponse({'status': False}, status=401)
+        return HttpResponse(status=401)
 
-    if request.method == 'PUT':
-        comment.delete()
-        return JsonResponse({'status': True})
-
-    return redirect(comment.article)
+    comment.delete()
+    return HttpResponse(status=200)

@@ -64,8 +64,8 @@ class Comment(BaseModel):
 
 
 class Scrap(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                on_delete=models.CASCADE)
     article_set = models.ManyToManyField(Article, blank=True)
 
     def __str__(self):
