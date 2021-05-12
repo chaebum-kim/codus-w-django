@@ -9,14 +9,24 @@ from board.models import Tag
 
 
 class User(AbstractUser):
-    pass
+    @property
+    def count_articles(self):
+        return self.article_set.count()
+
+    @property
+    def count_comments(self):
+        return self.comment_set.count()
+
+    @property
+    def count_scraps(self):
+        return self.scrap.article_set.count()
 
 
 class Profile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='profile')
     avatar = ProcessedImageField(upload_to=make_path_and_rename, processors=[ResizeToFill(
-        100, 100)], format='JPEG', options={'quality': 60}, blank=True)
+        200, 200)], format='JPEG', options={'quality': 60}, blank=True)
 
     @property
     def avatar_url(self):

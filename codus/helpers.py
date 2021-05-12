@@ -14,3 +14,19 @@ def make_path_and_rename(instance, filename):
         ymd_path,
         uuid_name + '.' + extension,
     ])
+
+
+def get_page_range(paginator, page_number):
+
+    if page_number % 5 == 1:
+        start_page = page_number
+    else:
+        start_page = page_number // 5 + 1
+
+    end_page = start_page + 4
+    if end_page > paginator.num_pages:
+        end_page = paginator.num_pages
+
+    page_range = [x for x in range(start_page, end_page+1)]
+
+    return page_range

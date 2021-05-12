@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codus</title>
     <link rel="stylesheet" href="{% static 'bootstrap-4.6.0-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     {% block stylesheet %}
     {% endblock %}
     <script src="{% static 'jquery-3.6.0.min.js' %}"></script>
@@ -25,7 +26,7 @@
               <ul class="navbar-nav">
                   {% if user.is_authenticated %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="{% url 'accounts:profile_edit' %}">
+                        <a class="nav-link" href="{% url 'accounts:profile' %}">
                             <img src="{{ user.profile.avatar_url }}" class="rounded-circle mr-2" style="width: 30px;">
                             {{ user.username }} 
                             <span class="sr-only">(current)</span>
