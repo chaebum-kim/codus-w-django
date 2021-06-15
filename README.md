@@ -16,6 +16,8 @@ The goal of this project is to support simple CRUD and basic registration.<br>
     - change your profile image
     - see the list of articles and comments you wrote
     - see the list of scrapped articles
+7. Support github markdown(partially)
+8. Support hashtags
 
 
 ## Installation
