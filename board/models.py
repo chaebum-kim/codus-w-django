@@ -19,17 +19,21 @@ class Article(BaseModel):
     content = models.TextField()
     tag_set = models.ManyToManyField('Tag', blank=True)
 
+    @property
+    def count_comments(self):
+        return self.comment_set.count()
+
     def tag_set_as_string(self):
         result = ''
         for tag in self.tag_set.all():
             result = result + '#' + tag.name + ' '
         return result
 
-    def __str__(self):
-        return f'Article #{self.id}'
-
     def get_absolute_url(self):
         return reverse('board:article_detail', args=[self.pk])
+
+    def __str__(self):
+        return f'Article #{self.id}'
 
     class Meta:
         ordering = ['-id']
@@ -67,6 +71,10 @@ class Scrap(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE)
     article_set = models.ManyToManyField(Article, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         return self.user.username
